@@ -17,7 +17,6 @@ public class Utility {
 			result = Double.parseDouble(rawValue);
 		} catch (NumberFormatException ex) {
 			LOG.debug("Invalid value format '{}', reverting to fallback!", rawValue);
-			assert result == FALLBACK_VALUE : "In case of error result must be equal to fallback value!";
 		}
 
 		return result;
