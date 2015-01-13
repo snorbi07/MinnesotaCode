@@ -1,6 +1,12 @@
 package com.norbertsram.minnesota.ontology;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,7 +35,7 @@ public class MinnesotaOntologyReasoner {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MinnesotaOntologyReasoner.class);
 	
-	private static final String MINNESOTA_CODE_ONTOLOGY = "MinnesotaCode3.owl";
+	private static final String DEFAULT_MINNESOTA_CODE_ONTOLOGY = "./ontology/MinnesotaCode.owl";
 
 	public static Multimap<String, RuleModel> processEcgData(EcgData data) {
 		Collection<EcgPatientData> patients = data.getData();
@@ -45,9 +51,16 @@ public class MinnesotaOntologyReasoner {
 	}
 	
 	public static InputStream loadOntology() {
-		InputStream ontologyFile = Objects.requireNonNull(
-				MinnesotaOntologyReasoner.class.getResourceAsStream(MINNESOTA_CODE_ONTOLOGY)
-			);
+		String ontologyPath = DEFAULT_MINNESOTA_CODE_ONTOLOGY; // NOTE: dynamic ontology usage could be a useful feature
+		InputStream resource = null;
+		try {
+			resource = new FileInputStream(ontologyPath);
+		} catch (FileNotFoundException e) {
+			throw new IllegalStateException("Cannot find ontology file: " + ontologyPath);
+		}
+		// FIXME: file based loading is a temporary solution. Fix classpath based loading for each use case (unit test as well)
+		//InputStream resource = MinnesotaOntologyReasoner.class.getResourceAsStream(DEFAULT_MINNESOTA_CODE_ONTOLOGY);
+		InputStream ontologyFile = Objects.requireNonNull(resource);
 		return ontologyFile;
 	}
 
