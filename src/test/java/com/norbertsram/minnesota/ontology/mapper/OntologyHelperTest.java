@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.norbertsram.flt.variable.type2.Type2FuzzySet;
+import com.norbertsram.flt.xml.Type2FuzzySetBuilder;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationValue;
@@ -121,9 +123,9 @@ public class OntologyHelperTest extends OntologyTestBase {
 			if (hasFuzzyDefinition) {
 				OWLAnnotationValue value = fuzzyValueAnnotation.getValue();
 				OWLLiteral literalValue = (OWLLiteral) value;
-				String membershipFunction = literalValue.getLiteral();
-				MembershipFunction mf = MembershipFunctionBuilder.build(membershipFunction);
-				assertTrue("Has valid/supported fuzzy definition!", mf != null);
+				String fuzzySet = literalValue.getLiteral();
+				Type2FuzzySet<MembershipFunction> type2FuzzySet = Type2FuzzySetBuilder.build(fuzzySet);
+				assertTrue("Has valid/supported fuzzy definition!", type2FuzzySet != null);
 			}
 		}
 	}
