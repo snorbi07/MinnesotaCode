@@ -2,17 +2,14 @@ package com.norbertsram.minnesota.utility;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
 import com.norbertsram.ecgapi.EcgProperty;
 import com.norbertsram.ecgapi.EcgReader;
 import com.norbertsram.ecgapi.model.EcgData;
+import com.norbertsram.ecgapi.model.EcgLeadValue;
 import com.norbertsram.ecgapi.model.EcgPatientData;
 import com.norbertsram.flt.operator.Max;
 import com.norbertsram.flt.operator.Min;
@@ -23,6 +20,8 @@ import com.norbertsram.minnesota.ontology.MinnesotaOntologyReasoner;
 import com.norbertsram.minnesota.rule.RuleModel;
 import com.norbertsram.minnesota.rule.RuleProperty;
 import com.norbertsram.minnesota.rule.RuleResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: refactor to proper CLI application
 public class DiagnosticApplication {
@@ -30,32 +29,70 @@ public class DiagnosticApplication {
 	private static final Operator[] fuzzyOperators = new Operator[]{Min.INSTANCE, Max.INSTANCE};
 	
 	private static final DecimalFormat decimalFormat = new DecimalFormat("#.####");
-	
+
+	// TODO(snorbi07): make it dynamic by reading file names from 'dataset' folder
 	private static final String[] datasets = new String[]{"twa.csv", "incart.csv", "ptb.csv"};
 	
 	private static final int ROW_SIZE = 6;
 	
-	private static final String[] headers = new String[]{"Medical Test Id", "Rule Id", "Classic", "Operator - Min", "Operator - Max"}; 
-	
+	private static final String[] headers = new String[]{"Medical Test Id", "Rule Id", "Classic", "Operator - Min", "Operator - Max"};
+
+	private static final Logger LOG = LoggerFactory.getLogger(DiagnosticApplication.class);
+
 	public static void main(String[] args) {
-		System.out.println("Starting DiagnosticResultComparisonApplication...");
-		
-		
+		LOG.info("Starting DiagnosticResultComparisonApplication...");
+
 		for (String datasetName : datasets) {
 			InputStream dataset = loadDataset(datasetName);
-			System.out.println("DiagnosticResultComparisonApplication processing dataset file: " + datasetName);
+			LOG.info("DiagnosticResultComparisonApplication processing dataset file: " + datasetName);
 			String resultFilename = datasetName + "-result";
 			
 			EcgData ecgData = parseDataset(dataset);
-			List<List<String>> rows = processEcgData(ecgData);
+			EcgData uniquelyIdentifiedEcgData = assureUniqueIds(ecgData);
+			List<List<String>> rows = processEcgData(uniquelyIdentifiedEcgData);
 			try {
 				writeResults(rows, resultFilename);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		System.out.println("DiagnosticResultComparisonApplication finished!");
+
+		LOG.info("DiagnosticResultComparisonApplication finished!");
+	}
+
+	// In the available datasets there are multiple samples for each patient. In order to ease debugging and
+	// improve diagnostic efficiency analysis we tag each entry with a unique counter (sample identifier)
+	// Not pretty however it gets the job done!
+	private static EcgData assureUniqueIds(EcgData ecgData) {
+		Map<String, Integer> patientIds = new HashMap<>();
+		Collection<EcgPatientData> data = ecgData.getData();
+		EcgData uniqueIdEcgData = new EcgData();
+		for (EcgPatientData patient : data) {
+			String patientId = patient.getPatientId();
+			int uniqueCounter = 0;
+
+			if (patientIds.containsKey(patientId)) {
+				uniqueCounter = patientIds.get(patientId);
+			}
+
+			String uniqueId = patientId + " (Sample " + uniqueCounter + ")";
+
+			patientIds.put(patientId, uniqueCounter + 1);
+
+			EcgPatientData uniqueIdPatientData = new EcgPatientData(uniqueId, patient.getDescription());
+
+			copyEcgPatientData(patient, uniqueIdPatientData);
+			uniqueIdEcgData.add(uniqueIdPatientData);
+		}
+
+		return uniqueIdEcgData;
+	}
+
+	private static void copyEcgPatientData(EcgPatientData from, EcgPatientData to) {
+		List<EcgLeadValue> data = from.getData();
+		for (EcgLeadValue value : data) {
+			to.add(value);
+		}
 	}
 
 	private static void writeResults(List<List<String>> rows, String outputFilename) throws IOException {
