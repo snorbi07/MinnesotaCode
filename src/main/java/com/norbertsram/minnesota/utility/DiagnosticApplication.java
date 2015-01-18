@@ -1,8 +1,6 @@
 package com.norbertsram.minnesota.utility;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -149,7 +147,14 @@ public class DiagnosticApplication {
 	}
 	
 	public static InputStream loadDataset(String datasetName) {
-		InputStream dataset = DiagnosticApplication.class.getResourceAsStream(datasetName);
+		InputStream dataset = null;
+		try {
+			dataset = new FileInputStream("./dataset/" + datasetName);
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException("Cannot find file name: " + datasetName + "\n" + e);
+		}
+		// FIXME: Related to issue #1, same bug as for ontology loading.
+//		InputStream dataset = DiagnosticApplication.class.getResourceAsStream(datasetName);
 		return dataset;
 	}
 	
