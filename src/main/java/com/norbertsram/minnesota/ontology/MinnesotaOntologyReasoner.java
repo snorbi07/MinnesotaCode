@@ -1,21 +1,5 @@
 package com.norbertsram.minnesota.ontology;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.norbertsram.ecgapi.EcgLead;
@@ -30,6 +14,13 @@ import com.norbertsram.minnesota.ontology.mapper.Sample;
 import com.norbertsram.minnesota.rule.RuleModel;
 import com.norbertsram.minnesota.rule.RuleProperty;
 import com.norbertsram.minnesota.rule.RuleResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.*;
 
 public class MinnesotaOntologyReasoner {
 
