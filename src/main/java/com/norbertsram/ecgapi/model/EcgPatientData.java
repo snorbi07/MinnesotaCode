@@ -13,7 +13,7 @@ public class EcgPatientData {
 
 	private final String patientId;
 	private final String description;
-	private final List<EcgLeadValue> data;
+	private final List<com.norbertsram.ecgapi.model.EcgLeadValue> data;
 
 	public EcgPatientData(String patientId, String description) {
 		this.patientId = Objects.requireNonNull(patientId);
@@ -21,12 +21,12 @@ public class EcgPatientData {
 		this.data = new ArrayList<>();
 	}
 	
-	public EcgPatientData add(EcgLeadValue value) {
+	public EcgPatientData add(com.norbertsram.ecgapi.model.EcgLeadValue value) {
 		data.add(value);
 		return this;
 	}
 
-	public List<EcgLeadValue> getData() {
+	public List<com.norbertsram.ecgapi.model.EcgLeadValue> getData() {
 		return Collections.unmodifiableList(data);
 	}
 
@@ -36,18 +36,18 @@ public class EcgPatientData {
 	
 	public List<EcgLead> getAvailableLeads() {
 		Set<EcgLead> leads = new HashSet<>();
-		for (EcgLeadValue leadValue : data) {
+		for (com.norbertsram.ecgapi.model.EcgLeadValue leadValue : data) {
 			leads.add(leadValue.getLead());
 		}
 		
 		return new ArrayList<>(leads);
 	}
 	
-	public EcgLeadValue getEcgLeadValue(EcgLead lead) {
+	public com.norbertsram.ecgapi.model.EcgLeadValue getEcgLeadValue(EcgLead lead) {
 		Objects.requireNonNull(lead);
 		
-		EcgLeadValue result = null;
-		for (EcgLeadValue leadValue : data) {
+		com.norbertsram.ecgapi.model.EcgLeadValue result = null;
+		for (com.norbertsram.ecgapi.model.EcgLeadValue leadValue : data) {
 			if (lead == leadValue.getLead()) {
 				result = leadValue;
 			}

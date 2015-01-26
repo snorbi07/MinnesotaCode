@@ -81,10 +81,5 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/HermiT.jar</systemPath>
 		</dependency>
-		<dependency>
-			<groupId>com.norbertsram.ecgapi</groupId>
-			<artifactId>ecgapi</artifactId>
-			<version>0.1-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 </project>
