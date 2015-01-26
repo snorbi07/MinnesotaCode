@@ -36,7 +36,6 @@ public class MinnesotaOntologyReasonerTest {
 		assertTrue(processPatientData.size() > 0);
 	}
 	
-	@Ignore
 	@Test
 	public void testInference() {
 		RuleModel rule1_1_1 = new RuleModel(RuleEntity.RULE_1_1_1);
