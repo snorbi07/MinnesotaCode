@@ -44,7 +44,7 @@ public class DiagnosticApplication {
 		for (String datasetName : datasets) {
 			InputStream dataset = loadDataset(datasetName);
 			LOG.info("DiagnosticResultComparisonApplication processing dataset file: " + datasetName);
-			String resultFilename = datasetName + "-result";
+			String resultFilename = "result-" + datasetName;
 			
 			EcgData ecgData = parseDataset(dataset);
 			EcgData uniquelyIdentifiedEcgData = assureUniqueIds(ecgData);

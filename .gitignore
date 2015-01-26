@@ -21,3 +21,4 @@ hs_err_pid*
 # Reference Data and/or analysis output
 *.xls
 *.xlsx
+*.csv
