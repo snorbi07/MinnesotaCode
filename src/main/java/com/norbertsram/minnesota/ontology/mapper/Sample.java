@@ -193,7 +193,7 @@ public class Sample implements OwlRepresentation<OWLNamedIndividual> {
 
 			RuleEvaluationStep ruleStep = property.getValue();
 			
-			RuleProperty ruleProperty = new RuleProperty(ecgProperty, ruleStep.getType2FuzzySet(), ruleStep.getCrispValue());
+			RuleProperty ruleProperty = new RuleProperty(ecgProperty, lead, ruleStep.getType2FuzzySet(), ruleStep.getCrispValue());
 			ruleResult.addProperty(ruleProperty);
 		}
 		

@@ -71,76 +71,47 @@ public class MinnesotaOntologyReasoner {
 		return result;
 	}
 	
-	public static RuleResult inferResult(RuleModel rule) {
-		return infer(rule, Min.INSTANCE);
-	}
-
-	public static RuleResult infer(RuleModel rule, Operator op) {
+	private static void validateRuleModel(RuleModel rule) {
 		Objects.requireNonNull(rule);
-		Objects.requireNonNull(op);
-		
+
 		assert rule.getProperties() != null;
 		if (rule.getProperties().isEmpty()) {
 			throw new IllegalArgumentException("Corrupt or invalid rule model: " + rule.toString());
 		}
-		
-		if (op instanceof Min) {
-			return inferIntersectionAverage(rule);
-		}
-		else {
-			return inferIntersections(rule);
-		}
-		
-//		Iterator<RuleProperty> properties = rule.getProperties().iterator();
-//		assert properties.hasNext();
-//		
-//		RuleProperty property = properties.next();
-//		Interval result = property.getDegreeOfTruth();
-//
-////		double degreeOfTruth = (interval.getUpperBound() + interval.getLowerBound()) / 2.0;
-//		
-//		while(properties.hasNext()) {
-//			property = properties.next();
-////			double degreeOfTruth = property.getDegreeOfTruth();
-////			result = op.apply(result, degreeOfTruth);
-//			Interval degreeOfTruth = property.getDegreeOfTruth();
-//			if (degreeOfTruth.isIntersect(result)) {
-//				result = degreeOfTruth.intersect(result);
-//			}
-//			else {
-//				result = calculateDifference(result, degreeOfTruth);
-//			}
-//		}
-//		
-//		double degreeOfTruth = (result.getUpperBound() + result.getLowerBound()) / 2.0;
-//		
-//		return new RuleResult(rule.getType(), degreeOfTruth);
 	}
-	
-	private static RuleResult inferIntersectionAverage(RuleModel rule) {
+
+	/*
+	First reduce the type-2 fuzzy intervals to a type-1 then aggregate using type-1 aggregation
+	 */
+	public static RuleResult typeReducedAggregation(RuleModel rule) {
+		validateRuleModel(rule);
 		Iterator<RuleProperty> properties = rule.getProperties().iterator();
 		assert properties.hasNext();
-		
+
 		RuleProperty property = properties.next();
 		Interval interval = property.getDegreeOfTruth();
 
 		double result = intervalToDegreeOfTruth(interval);
-		
-		while(properties.hasNext()) {
+
+		while (properties.hasNext()) {
 			property = properties.next();
 			interval = property.getDegreeOfTruth();
 			double degreeOfTruth = intervalToDegreeOfTruth(interval);
 			result = Min.INSTANCE.apply(result, degreeOfTruth);
-		}	
-		
+		}
+
 		return new RuleResult(rule.getType(), result);
 	}
 		
 	private static double intervalToDegreeOfTruth(Interval interval) {
 		return (interval.getUpperBound() + interval.getLowerBound()) / 2.0;
 	}
-	
-	private static RuleResult inferIntersections(RuleModel rule) {
+
+	/*
+	Calculate the distance between the intervals then execute the type-2 fuzzy reduction
+	 */
+	public static RuleResult distanceBasedReduction(RuleModel rule) {
+		validateRuleModel(rule);
 		Iterator<RuleProperty> properties = rule.getProperties().iterator();
 		assert properties.hasNext();
 		

@@ -43,14 +43,14 @@ public class MinnesotaOntologyReasonerTest {
 		final double crispValue1 = 0.6;
 		
 		IntervalType2FuzzySet fuzzySet1 = new IntervalType2FuzzySet(new DummyMembershipFunction(0.65), new DummyMembershipFunction(0.5));
-		RuleProperty property = new RuleProperty(EcgProperty.RATIO_QR, fuzzySet1, crispValue1);
+		RuleProperty property = new RuleProperty(EcgProperty.RATIO_QR, EcgLead.I, fuzzySet1, crispValue1);
 		rule1_1_1.addProperty(property);
 
 		IntervalType2FuzzySet fuzzySet2 = new IntervalType2FuzzySet(new DummyMembershipFunction(0.8), new DummyMembershipFunction(0.7));
-		property = new RuleProperty(EcgProperty.RATIO_QR, fuzzySet2, 0.75);
+		property = new RuleProperty(EcgProperty.RATIO_QR, EcgLead.I, fuzzySet2, 0.75);
 		rule1_1_1.addProperty(property);
-		
-		RuleResult inferedResult = MinnesotaOntologyReasoner.inferResult(rule1_1_1);
+
+		RuleResult inferedResult = MinnesotaOntologyReasoner.typeReducedAggregation(rule1_1_1);
 		double degreeOfTruth = inferedResult.getDegreeOfTruth();
 		
     	DecimalFormat decimalForm = new DecimalFormat("#.####");

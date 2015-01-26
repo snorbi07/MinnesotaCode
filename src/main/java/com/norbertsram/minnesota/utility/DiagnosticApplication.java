@@ -6,14 +6,10 @@ import java.util.*;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-import com.norbertsram.ecgapi.EcgProperty;
 import com.norbertsram.ecgapi.EcgReader;
 import com.norbertsram.ecgapi.model.EcgData;
 import com.norbertsram.ecgapi.model.EcgLeadValue;
 import com.norbertsram.ecgapi.model.EcgPatientData;
-import com.norbertsram.flt.operator.Max;
-import com.norbertsram.flt.operator.Min;
-import com.norbertsram.flt.operator.Operator;
 import com.norbertsram.minnesota.expsys.MinnesotaExpertSystemReasoner;
 import com.norbertsram.minnesota.io.csv.CsvParser;
 import com.norbertsram.minnesota.ontology.MinnesotaOntologyReasoner;
@@ -26,16 +22,19 @@ import org.slf4j.LoggerFactory;
 // TODO: refactor to proper CLI application
 public class DiagnosticApplication {
 
-	private static final Operator[] fuzzyOperators = new Operator[]{Min.INSTANCE, Max.INSTANCE};
-	
 	private static final DecimalFormat decimalFormat = new DecimalFormat("#.####");
 
 	// TODO(snorbi07): make it dynamic by reading file names from 'dataset' folder
 	private static final String[] datasets = new String[]{"twa.csv", "incart.csv", "ptb.csv"};
 	
-	private static final int ROW_SIZE = 6;
-	
-	private static final String[] headers = new String[]{"Medical Test Id", "Rule Id", "Classic", "Operator - Min", "Operator - Max"};
+	private static final String[] HEADERS =
+			new String[]{
+					"Medical Test Id", "Rule Id", "Classic", "Type-Reduced Aggregation", "Interval Distance Based Reduction",
+					"Parameter 1 - ECG Lead", "Parameter 1 - Waveform type", "Parameter 1 - Waveform value",
+					"Parameter 2 - ECG Lead", "Parameter 2 - Waveform type", "Parameter 2 - Waveform value"
+			};
+
+	private static final int ROW_SIZE = HEADERS.length;
 
 	private static final Logger LOG = LoggerFactory.getLogger(DiagnosticApplication.class);
 
@@ -97,7 +96,7 @@ public class DiagnosticApplication {
 
 	private static void writeResults(List<List<String>> rows, String outputFilename) throws IOException {
 		CSVWriter writer = new CSVWriter(new FileWriter(outputFilename));
-		writer.writeNext(headers);
+		writer.writeNext(HEADERS);
 		for (List<String> row : rows) {
 			String[] rowItems = row.toArray(new String[row.size()]);
 			writer.writeNext(rowItems);
@@ -125,54 +124,56 @@ public class DiagnosticApplication {
 		for (RuleModel rule : rules) {
 			String ruleIdentifier = rule.getType().toString();
 			boolean classicResult = MinnesotaExpertSystemReasoner.infer(rule);
-			Map<Operator, Double> fuzzyResults = inferRuleModel(rule);
-			String resultDescription = buildResultDescription(rule);
-			List<String> row = buildResultRow(patientId, ruleIdentifier, classicResult, fuzzyResults, resultDescription);
+			List<Double> fuzzyResults = inferRuleModel(rule);
+			List<String> description = buildResultDescriptionColumns(rule);
+			List<String> row = buildResultRow(patientId, ruleIdentifier, classicResult, fuzzyResults, description);
 			rows.add(row);
 		}
 		
 		return rows;
 	}
 	
-	private static String buildResultDescription(RuleModel rule) {
+	private static List<String> buildResultDescriptionColumns(RuleModel rule) {
         StringBuilder sb = new StringBuilder();
         sb.append(rule.getType().toString()).append("{");
-        for (RuleProperty property : rule.getProperties()) {
-            EcgProperty ecgProperty = property.getProperty();
-            sb.append(ecgProperty.toString()).append("=").append(property.getCrispValue());
-            sb.append(", ");
+		List<String> descriptionRows = new ArrayList<>();
+		for (RuleProperty property : rule.getProperties()) {
+			// which ECG lead does the property belong to
+			descriptionRows.add(property.getEcgLead().toString());
+
+			// name of the property itself
+			descriptionRows.add(property.getProperty().toString());
+			// the value of the property
+			descriptionRows.add(String.valueOf(property.getCrispValue()));
         }
-        sb.append("}");
 
-        return sb.toString();
-    }
+		return descriptionRows;
+	}
 
-	private static Map<Operator, Double> inferRuleModel(RuleModel rule) {
-		Map<Operator, Double> results = new HashMap<>(fuzzyOperators.length);
-		
-		for (Operator op : fuzzyOperators) {
-			RuleResult result = MinnesotaOntologyReasoner.infer(rule, op);
-			double degreeOfTruth = result.getDegreeOfTruth();
-			results.put(op, degreeOfTruth);
-		}
-		
+	private static List<Double> inferRuleModel(RuleModel rule) {
+		List<Double> results = new ArrayList<>();
+
+		RuleResult typeReducedAggregation = MinnesotaOntologyReasoner.typeReducedAggregation(rule);
+		RuleResult distanceBasedReduction = MinnesotaOntologyReasoner.distanceBasedReduction(rule);
+
+		results.add(typeReducedAggregation.getDegreeOfTruth());
+		results.add(distanceBasedReduction.getDegreeOfTruth());
+
 		return results;
 	}
 	
-	private static List<String> buildResultRow(String patientId, String ruleId, boolean classicResult, Map<Operator, Double> fuzzyResults, String resultDescription) {
+	private static List<String> buildResultRow(String patientId, String ruleId, boolean classicResult, List<Double> fuzzyResults, List<String> resultDescription) {
 		List<String> row = new ArrayList<>(ROW_SIZE);
 		row.add(patientId);
 		row.add(ruleId);
 		row.add(Boolean.toString(classicResult));
-		
-		for (Operator op : fuzzyOperators) {
-			Double value = fuzzyResults.get(op);
-			assert value != null;
-			String formatedResult = decimalFormat.format(value);
+
+		for (double fuzzyResult : fuzzyResults) {
+			String formatedResult = decimalFormat.format(fuzzyResult);
 			row.add(formatedResult);
 		}
-		
-		row.add(resultDescription);
+
+		row.addAll(resultDescription);
 		
 		return row;
 	}

@@ -5,7 +5,9 @@ import static com.google.common.base.Objects.toStringHelper;
 import java.util.Objects;
 
 import com.google.common.base.Objects.ToStringHelper;
+import com.norbertsram.ecgapi.EcgLead;
 import com.norbertsram.ecgapi.EcgProperty;
+import com.norbertsram.ecgapi.model.EcgData;
 import com.norbertsram.flt.common.Interval;
 import com.norbertsram.flt.mf.IndicatorMembershipFunction;
 import com.norbertsram.flt.mf.MembershipFunction;
@@ -17,11 +19,13 @@ public class RuleProperty {
 	private final EcgProperty property;
 	private final Type2FuzzySet<MembershipFunction> type2FuzzySet;
 	private final double crispValue;
+	private final EcgLead ecgLead;
 
-	public RuleProperty(EcgProperty property, Type2FuzzySet<MembershipFunction> type2FuzzySet, double crispValue) {
+	public RuleProperty(EcgProperty property, EcgLead ecgLead, Type2FuzzySet<MembershipFunction> type2FuzzySet, double crispValue) {
 		this.property = Objects.requireNonNull(property);
 		this.type2FuzzySet = Objects.requireNonNull(type2FuzzySet);
 		this.crispValue = crispValue;
+		this.ecgLead = ecgLead;
 	}
 
 	public EcgProperty getProperty() {
@@ -42,6 +46,10 @@ public class RuleProperty {
 
 	public Type2FuzzySet<MembershipFunction> getType2FuzzySet() {
 		return type2FuzzySet;
+	}
+
+	public EcgLead getEcgLead() {
+		return ecgLead;
 	}
 
 	@Override
