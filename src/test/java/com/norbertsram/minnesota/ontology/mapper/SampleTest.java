@@ -32,7 +32,7 @@ public class SampleTest extends OntologyTestBase {
 			for (RuleProperty ruleProperty : ruleProperties) {
 				EcgProperty property = ruleProperty.getProperty();
 				// TODO: fix
-//				double degreeOfTruth = ruleProperty.getDegreeOfTruth();
+//				double degreeOfTruth = ruleProperty.getFuzzyType2DegreeOfTruth();
 				System.out.println("\t\tWAVEFORM: " + property);
 //				System.out.println("\t\tFUZZY VALUE: " + degreeOfTruth);
 			}

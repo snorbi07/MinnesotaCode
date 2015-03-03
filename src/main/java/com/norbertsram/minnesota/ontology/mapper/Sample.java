@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import com.norbertsram.flt.xml.MembershipFunctionBuilder;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationValue;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -193,7 +194,7 @@ public class Sample implements OwlRepresentation<OWLNamedIndividual> {
 
 			RuleEvaluationStep ruleStep = property.getValue();
 			
-			RuleProperty ruleProperty = new RuleProperty(ecgProperty, lead, ruleStep.getType2FuzzySet(), ruleStep.getCrispValue());
+			RuleProperty ruleProperty = new RuleProperty(ecgProperty, lead, ruleStep.getType1FuzzySet(), ruleStep.getType2FuzzySet(), ruleStep.getCrispValue());
 			ruleResult.addProperty(ruleProperty);
 		}
 		
@@ -260,54 +261,55 @@ public class Sample implements OwlRepresentation<OWLNamedIndividual> {
 		return crispValues;
 	}
 	
-	private Map<OWLClass, Type2FuzzySet<MembershipFunction>> getFuzzySetDefintionsForWaveforms(List<OWLClass> ruleWaveformTypes) {
+	private Map<OWLClass, Type2FuzzySet<MembershipFunction>> getType2FuzzySetDefinitionsForWaveforms(List<OWLClass> ruleWaveformTypes) {
 		Map<OWLClass, Type2FuzzySet<MembershipFunction>> result = new HashMap<>();
 		
 		for (OWLClass owlClass : ruleWaveformTypes) {
-			OWLAnnotation fuzzyValueAnnotation = helper.getFuzzyValueAnnotation(owlClass);
+            OWLAnnotation type2FuzzyValueAnnotation = helper.getType2FuzzyValueAnnotation(owlClass);
 			
 			Type2FuzzySet<MembershipFunction> fs = null;
-			if (fuzzyValueAnnotation != null) {
-				OWLAnnotationValue value = fuzzyValueAnnotation.getValue();
+			if (type2FuzzyValueAnnotation != null) {
+				OWLAnnotationValue value = type2FuzzyValueAnnotation.getValue();
 				OWLLiteral literalValue = (OWLLiteral) value; 
 				String fuzzySet = literalValue.getLiteral();
 				fs = Type2FuzzySetBuilder.build(fuzzySet);
 			}
 			else {
-				LOG.error("Fuzzy set definition not found for type '{}'", owlClass);
+                throw new IllegalArgumentException("Type-2 fuzzy set definition not found for type: " + owlClass.toString());
 			}
 			result.put(owlClass, fs);
 		}
 		
 		return result;
 	}
-
-//	@Deprecated
-//	private Map<OWLClass, MembershipFunction> getFuzzyDefintionsForWaveforms(List<OWLClass> ruleWaveformTypes) {
-//		Map<OWLClass, MembershipFunction> result = new HashMap<>();
-//		
-//		for (OWLClass owlClass : ruleWaveformTypes) {
-//			OWLAnnotation fuzzyValueAnnotation = helper.getFuzzyValueAnnotation(owlClass);
-//			
-//			MembershipFunction mf = null;
-//			if (fuzzyValueAnnotation != null) {
-//				OWLAnnotationValue value = fuzzyValueAnnotation.getValue();
-//				OWLLiteral literalValue = (OWLLiteral) value; 
-//				String membershipFunction = literalValue.getLiteral();
-//				mf = MembershipFunctionBuilder.build(membershipFunction);
-//			}
-//			else {
-//				LOG.error("Fuzzy definition not found for type '{}'", owlClass);
-//			}
-//			result.put(owlClass, mf);
-//		}
-//		
-//		return result;
-//	}
+    
+    private Map<OWLClass, MembershipFunction> getType1FuzzySetDefinitionsForWaveforms(List<OWLClass> ruleWaveformTypes) {
+		Map<OWLClass, MembershipFunction> result = new HashMap<>();
+		
+        
+		for (OWLClass owlClass : ruleWaveformTypes) {
+            OWLAnnotation type1FuzzyValueAnnotation = helper.getType1FuzzyValueAnnotation(owlClass);
+			
+			MembershipFunction mf;
+			if (type1FuzzyValueAnnotation != null) {
+				OWLAnnotationValue value = type1FuzzyValueAnnotation.getValue();
+				OWLLiteral literalValue = (OWLLiteral) value; 
+				String fuzzySet = literalValue.getLiteral();
+                mf = MembershipFunctionBuilder.build(fuzzySet);
+            }
+			else {
+                throw new IllegalArgumentException("Type-1 fuzzy set definition not found for type: " + owlClass.toString());
+			}
+			result.put(owlClass, mf);
+		}
+		
+		return result;
+	}
 	
 	private Map<OWLClass, RuleEvaluationStep> getFuzzySetValues(List<OWLClass> ruleWaveformTypes, 
 			Map<OWLClass, Double> waveformCrispValues, 
-			Map<OWLClass, Type2FuzzySet<MembershipFunction>> fuzzyDefintionsForWaveforms) {
+            Map<OWLClass, MembershipFunction> type1FuzzyDefinitions,
+			Map<OWLClass, Type2FuzzySet<MembershipFunction>> type2FuzzyDefintions) {
 
 		Map<OWLClass, RuleEvaluationStep> fuzzyStubs = new HashMap<>();
 
@@ -318,14 +320,20 @@ public class Sample implements OwlRepresentation<OWLNamedIndividual> {
 				LOG.error("Missing crisp value for type '{}'!", waveformType);
 			}
 			
-			Type2FuzzySet<MembershipFunction> type2FuzzySet = fuzzyDefintionsForWaveforms.get(waveformType);
-			boolean isFuzzySetAvailable = type2FuzzySet != null; 
-			if (!isFuzzySetAvailable) {
-				LOG.error("Missing fuzzy definition for type '{}'!", waveformType);
+			Type2FuzzySet<MembershipFunction> type2FuzzySet = type2FuzzyDefintions.get(waveformType);
+			boolean isType2FuzzySetAvailable = type2FuzzySet != null;
+			if (!isType2FuzzySetAvailable) {
+				LOG.error("Missing type-2 fuzzy definition for type '{}'!", waveformType);
+			}
+            
+            MembershipFunction type1FuzzySet = type1FuzzyDefinitions.get(waveformType);
+			boolean isType1FuzzySetAvailable = type1FuzzySet != null;
+			if (!isType1FuzzySetAvailable) {
+				LOG.error("Missing type-1 fuzzy definition for type '{}'!", waveformType);
 			}
 
-			if (isCrispValueAvailable && isFuzzySetAvailable)	{
-				RuleEvaluationStep stub = new RuleEvaluationStep(type2FuzzySet, crispValue);
+			if (isCrispValueAvailable && isType1FuzzySetAvailable && isType2FuzzySetAvailable)	{
+				RuleEvaluationStep stub = new RuleEvaluationStep(type1FuzzySet, type2FuzzySet, crispValue);
 				fuzzyStubs.put(waveformType, stub);
 			}
 		}
@@ -369,10 +377,11 @@ public class Sample implements OwlRepresentation<OWLNamedIndividual> {
 				getWaveformOwlIndividualsForRule(inferredRule);
 		Map<OWLClass, Double> waveformCrispValues = 
 				getWaveformCrispValues(waveformOwlIndividualsForRule);
-		Map<OWLClass, Type2FuzzySet<MembershipFunction>> fuzzySetDefintionsForWaveforms = 
-				getFuzzySetDefintionsForWaveforms(ruleWaveformTypes);
-		Map<OWLClass, RuleEvaluationStep> fuzzySetValues = 
-				getFuzzySetValues(ruleWaveformTypes, waveformCrispValues, fuzzySetDefintionsForWaveforms);
+		Map<OWLClass, Type2FuzzySet<MembershipFunction>> type2FuzzySetDefinitionsForWaveforms = 
+				getType2FuzzySetDefinitionsForWaveforms(ruleWaveformTypes);
+        Map<OWLClass, MembershipFunction> type1FuzzySetDefinitionsForWaveforms = getType1FuzzySetDefinitionsForWaveforms(ruleWaveformTypes);
+        Map<OWLClass, RuleEvaluationStep> fuzzySetValues = 
+				getFuzzySetValues(ruleWaveformTypes, waveformCrispValues, type1FuzzySetDefinitionsForWaveforms, type2FuzzySetDefinitionsForWaveforms);
 
 		return fuzzySetValues;
 	}

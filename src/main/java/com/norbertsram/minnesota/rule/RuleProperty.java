@@ -17,28 +17,34 @@ import com.norbertsram.flt.variable.type2.Type2FuzzySet;
 public class RuleProperty {
 	
 	private final EcgProperty property;
+    private final MembershipFunction type1FuzzySet;
 	private final Type2FuzzySet<MembershipFunction> type2FuzzySet;
 	private final double crispValue;
 	private final EcgLead ecgLead;
 
-	public RuleProperty(EcgProperty property, EcgLead ecgLead, Type2FuzzySet<MembershipFunction> type2FuzzySet, double crispValue) {
-		this.property = Objects.requireNonNull(property);
-		this.type2FuzzySet = Objects.requireNonNull(type2FuzzySet);
-		this.crispValue = crispValue;
-		this.ecgLead = ecgLead;
-	}
+	public RuleProperty(EcgProperty property, EcgLead ecgLead, MembershipFunction type1FuzzySet, Type2FuzzySet<MembershipFunction> type2FuzzySet, double crispValue) {
+        this.property = Objects.requireNonNull(property);
+        this.type1FuzzySet = Objects.requireNonNull(type1FuzzySet);
+        this.type2FuzzySet = Objects.requireNonNull(type2FuzzySet);
+        this.crispValue = crispValue;
+        this.ecgLead = ecgLead;
+    }
 
 	public EcgProperty getProperty() {
 		return property;
 	}
 
-	public Interval getDegreeOfTruth() {
+	public Interval getFuzzyType2DegreeOfTruth() {
 		IndicatorMembershipFunction valueFor = (IndicatorMembershipFunction) type2FuzzySet.valueFor(crispValue);
 
 		Interval interval = valueFor.getInterval();
 
 		return interval;
 	}
+    
+    public double getFuzzyType1DegreeOfTruth() {
+        return type1FuzzySet.valueFor(crispValue);
+    }
 	
 	public double getCrispValue() {
 		return crispValue;

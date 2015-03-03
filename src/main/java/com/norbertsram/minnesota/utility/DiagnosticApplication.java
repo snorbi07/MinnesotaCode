@@ -29,7 +29,7 @@ public class DiagnosticApplication {
 	
 	private static final String[] HEADERS =
 			new String[]{
-					"Medical Test Id", "Rule Id", "Classic", "Type-Reduced Aggregation", "Interval Distance Based Reduction",
+					"Medical Test Id", "Rule Id", "Classic","Type-1 Fuzzy", "Type-2 Fuzzy: Type-Reduced Aggregation", "Type-2 Fuzzy: Interval Distance Based Reduction",
 					"Parameter 1 - ECG Lead", "Parameter 1 - Waveform type", "Parameter 1 - Waveform value",
 					"Parameter 2 - ECG Lead", "Parameter 2 - Waveform type", "Parameter 2 - Waveform value"
 			};
@@ -153,10 +153,12 @@ public class DiagnosticApplication {
 	private static List<Double> inferRuleModel(RuleModel rule) {
 		List<Double> results = new ArrayList<>();
 
-		RuleResult typeReducedAggregation = MinnesotaOntologyReasoner.typeReducedAggregation(rule);
+        RuleResult type1FuzzyResult = MinnesotaOntologyReasoner.type1FuzzyBasedAggregation(rule);
+        RuleResult typeReducedAggregation = MinnesotaOntologyReasoner.typeReducedAggregation(rule);
 		RuleResult distanceBasedReduction = MinnesotaOntologyReasoner.distanceBasedReduction(rule);
 
-		results.add(typeReducedAggregation.getDegreeOfTruth());
+        results.add(type1FuzzyResult.getDegreeOfTruth());
+        results.add(typeReducedAggregation.getDegreeOfTruth());
 		results.add(distanceBasedReduction.getDegreeOfTruth());
 
 		return results;

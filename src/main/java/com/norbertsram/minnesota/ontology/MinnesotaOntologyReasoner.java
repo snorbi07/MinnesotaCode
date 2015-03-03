@@ -8,7 +8,6 @@ import com.norbertsram.ecgapi.model.EcgLeadValue;
 import com.norbertsram.ecgapi.model.EcgPatientData;
 import com.norbertsram.flt.common.Interval;
 import com.norbertsram.flt.operator.Min;
-import com.norbertsram.flt.operator.Operator;
 import com.norbertsram.minnesota.ontology.mapper.OntologyBuilder;
 import com.norbertsram.minnesota.ontology.mapper.Sample;
 import com.norbertsram.minnesota.rule.RuleModel;
@@ -89,13 +88,13 @@ public class MinnesotaOntologyReasoner {
 		assert properties.hasNext();
 
 		RuleProperty property = properties.next();
-		Interval interval = property.getDegreeOfTruth();
+		Interval interval = property.getFuzzyType2DegreeOfTruth();
 
 		double result = intervalToDegreeOfTruth(interval);
 
 		while (properties.hasNext()) {
 			property = properties.next();
-			interval = property.getDegreeOfTruth();
+			interval = property.getFuzzyType2DegreeOfTruth();
 			double degreeOfTruth = intervalToDegreeOfTruth(interval);
 			result = Min.INSTANCE.apply(result, degreeOfTruth);
 		}
@@ -116,11 +115,11 @@ public class MinnesotaOntologyReasoner {
 		assert properties.hasNext();
 		
 		RuleProperty property = properties.next();
-		Interval result = property.getDegreeOfTruth();
+		Interval result = property.getFuzzyType2DegreeOfTruth();
 
 		while(properties.hasNext()) {
 			property = properties.next();
-			Interval degreeOfTruth = property.getDegreeOfTruth();
+			Interval degreeOfTruth = property.getFuzzyType2DegreeOfTruth();
 			if (degreeOfTruth.isIntersect(result)) {
 				result = degreeOfTruth.intersect(result);
 			}
@@ -132,6 +131,23 @@ public class MinnesotaOntologyReasoner {
 		double degreeOfTruth = (result.getUpperBound() + result.getLowerBound()) / 2.0;
 		
 		return new RuleResult(rule.getType(), degreeOfTruth);
+	}
+
+	public static RuleResult type1FuzzyBasedAggregation(RuleModel rule) {
+		validateRuleModel(rule);
+		Iterator<RuleProperty> properties = rule.getProperties().iterator();
+		assert properties.hasNext();
+		
+		RuleProperty property = properties.next();
+        double result = property.getFuzzyType1DegreeOfTruth();
+
+        while(properties.hasNext()) {
+			property = properties.next();
+			double degreeOfTruth = property.getFuzzyType1DegreeOfTruth();
+            result = Min.INSTANCE.apply(result, degreeOfTruth);
+        }
+		
+		return new RuleResult(rule.getType(), result);
 	}
 	
 	private static Interval calculateDifference(Interval lhs, Interval rhs) {

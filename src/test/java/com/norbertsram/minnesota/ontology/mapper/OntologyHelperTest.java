@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.norbertsram.flt.variable.FuzzySet;
 import com.norbertsram.flt.variable.type2.Type2FuzzySet;
+import com.norbertsram.flt.xml.MembershipFunctionBuilder;
 import com.norbertsram.flt.xml.Type2FuzzySetBuilder;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -23,7 +25,6 @@ import org.semanticweb.owlapi.model.OWLObject;
 import com.google.common.base.Joiner;
 import com.norbertsram.ecgapi.EcgLead;
 import com.norbertsram.flt.mf.MembershipFunction;
-import com.norbertsram.flt.xml.MembershipFunctionBuilder;
 import com.norbertsram.minnesota.ontology.mapper.entity.OntologyPathProvider;
 import com.norbertsram.minnesota.ontology.mapper.entity.PropertyEntity;
 import com.norbertsram.minnesota.ontology.mapper.entity.RuleEntity;
@@ -115,13 +116,26 @@ public class OntologyHelperTest extends OntologyTestBase {
 		List<OWLClass> owlClassesForWaveformType = builder.getOwlSubClassesForWaveformType(type);
 
 		for (OWLClass owlClass : owlClassesForWaveformType) {
-			OWLAnnotation fuzzyValueAnnotation = 
-					builder.getFuzzyValueAnnotation(owlClass);
-			boolean hasFuzzyDefinition = fuzzyValueAnnotation != null;
-			assertTrue("Does not have fuzzy value!", hasFuzzyDefinition);
+			OWLAnnotation type1FuzzyValueAnnotation = 
+					builder.getType1FuzzyValueAnnotation(owlClass);
+			boolean hasType1FuzzyDefinition = type1FuzzyValueAnnotation != null;
+			assertTrue("Does not have type-1 fuzzy value!", hasType1FuzzyDefinition);
 		
-			if (hasFuzzyDefinition) {
-				OWLAnnotationValue value = fuzzyValueAnnotation.getValue();
+			if (hasType1FuzzyDefinition) {
+				OWLAnnotationValue value = type1FuzzyValueAnnotation.getValue();
+				OWLLiteral literalValue = (OWLLiteral) value;
+				String fuzzySet = literalValue.getLiteral();
+                MembershipFunction mf = MembershipFunctionBuilder.build(fuzzySet);
+                assertTrue("Has valid/supported fuzzy definition!", mf != null);
+			}
+            
+            OWLAnnotation type2FuzzyValueAnnotation = 
+					builder.getType2FuzzyValueAnnotation(owlClass);
+			boolean hasType2FuzzyDefinition = type2FuzzyValueAnnotation != null;
+			assertTrue("Does not have fuzzy value!", hasType2FuzzyDefinition);
+		
+			if (hasType2FuzzyDefinition) {
+				OWLAnnotationValue value = type2FuzzyValueAnnotation.getValue();
 				OWLLiteral literalValue = (OWLLiteral) value;
 				String fuzzySet = literalValue.getLiteral();
 				Type2FuzzySet<MembershipFunction> type2FuzzySet = Type2FuzzySetBuilder.build(fuzzySet);

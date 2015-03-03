@@ -166,9 +166,16 @@ class OntologyHelper {
 		return new ArrayList<>(flattened);
 	}
 
-	OWLAnnotation getFuzzyValueAnnotation(OWLClass owlClass) {
-		String fuzzyValuePath = PropertyEntity.FUZZY_VALUE.getPath();
-		IRI fuzzyValueIri = IRI.create(fuzzyValuePath);
+	OWLAnnotation getType2FuzzyValueAnnotation(OWLClass owlClass) {
+        return getFuzzyValueAnnotation(PropertyEntity.TYPE_2_FUZZY_VALUE.getPath(), owlClass);
+    }
+    
+	OWLAnnotation getType1FuzzyValueAnnotation(OWLClass owlClass) {
+        return getFuzzyValueAnnotation(PropertyEntity.TYPE_1_FUZZY_VALUE.getPath(), owlClass);
+    }
+    
+    OWLAnnotation getFuzzyValueAnnotation(String fuzzyAnnotationPath, OWLClass owlClass) {
+		IRI fuzzyValueIri = IRI.create(fuzzyAnnotationPath);
 		OWLAnnotationProperty fuzzyValueAnnotationProperty = 
 				factory.getOWLAnnotationProperty(fuzzyValueIri);
 		Set<OWLAnnotation> annotations = 
