@@ -42,6 +42,14 @@
     
 
 
+    <!-- http://www.norbertsram.com/ontologies/MinnesotaCode.owl#type1FuzzyValue -->
+
+    <owl:AnnotationProperty rdf:about="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#type1FuzzyValue">
+        <rdfs:subPropertyOf rdf:resource="&rdfs;label"/>
+    </owl:AnnotationProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -295,6 +303,7 @@
 
     <owl:Class rdf:about="&Q;RAmplitudeRatioLowerTreshold">
         <rdfs:subClassOf rdf:resource="&Q;RAmplitudeRatio"/>
+        <rdfs:comment>Q/R ratio is greater then 1/5</rdfs:comment>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
      &lt;membershipFunction name=&quot;smf&quot;&gt;
@@ -311,7 +320,12 @@
     &lt;/membershipFunction&gt;   
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
-        <rdfs:comment>Q/R ratio is greater then 1/5</rdfs:comment>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;smf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.1&lt;/parameter&gt;
+      &lt;parameter&gt;0.20&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
     </owl:Class>
     
 
@@ -320,6 +334,14 @@
 
     <owl:Class rdf:about="&Q;RAmplitudeRatioTransition">
         <rdfs:subClassOf rdf:resource="&Q;RAmplitudeRatio"/>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;gbellmf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.12&lt;/parameter&gt;
+      &lt;parameter&gt;2.0&lt;/parameter&gt;
+      &lt;parameter&gt;0.25&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
+        <rdfs:comment>Q/R ratio is in between 1/5 and 1/3</rdfs:comment>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
      &lt;membershipFunction name=&quot;trapmf&quot;&gt;
@@ -340,7 +362,6 @@
     &lt;/membershipFunction&gt;   
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
-        <rdfs:comment>Q/R ratio is in between 1/5 and 1/3</rdfs:comment>
     </owl:Class>
     
 
@@ -349,7 +370,12 @@
 
     <owl:Class rdf:about="&Q;RAmplitudeRatioUpperTreshold">
         <rdfs:subClassOf rdf:resource="&Q;RAmplitudeRatio"/>
-        <rdfs:comment>Q/R ratio is greater then 1/3</rdfs:comment>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;smf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.175&lt;/parameter&gt;
+      &lt;parameter&gt;0.33&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
      &lt;membershipFunction name=&quot;smf&quot;&gt;
@@ -366,6 +392,7 @@
     &lt;/membershipFunction&gt;   
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
+        <rdfs:comment>Q/R ratio is greater then 1/3</rdfs:comment>
     </owl:Class>
     
 
@@ -391,6 +418,13 @@
 
     <owl:Class rdf:about="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QAmplitudeNormal">
         <rdfs:subClassOf rdf:resource="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QAmplitude"/>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;smf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.35&lt;/parameter&gt;
+      &lt;parameter&gt;0.50&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
+        <rdfs:comment>Amplitude of Q waveform is greater than or equal to 5mm</rdfs:comment>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
      &lt;membershipFunction name=&quot;smf&quot;&gt;
@@ -407,7 +441,6 @@
     &lt;/membershipFunction&gt;   
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
-        <rdfs:comment>Amplitude of Q waveform is greater than or equal to 5mm</rdfs:comment>
     </owl:Class>
     
 
@@ -425,7 +458,12 @@
 
     <owl:Class rdf:about="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDurationLong">
         <rdfs:subClassOf rdf:resource="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDuration"/>
-        <rdfs:comment>Duration of the Q waveform is greater then 0.05ms</rdfs:comment>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;smf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.035&lt;/parameter&gt;
+      &lt;parameter&gt;0.050&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
      &lt;membershipFunction name=&quot;smf&quot;&gt;
@@ -442,6 +480,7 @@
     &lt;/membershipFunction&gt;   
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
+        <rdfs:comment>Duration of the Q waveform is greater then 0.05ms</rdfs:comment>
     </owl:Class>
     
 
@@ -450,6 +489,7 @@
 
     <owl:Class rdf:about="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDurationLongRange">
         <rdfs:subClassOf rdf:resource="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDuration"/>
+        <rdfs:comment>Duration of the Q waveform is between then 0.04ms and 0.05ms</rdfs:comment>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
     &lt;membershipFunction name=&quot;trapmf&quot;&gt;
@@ -470,7 +510,13 @@
     &lt;/membershipFunction&gt;
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
-        <rdfs:comment>Duration of the Q waveform is between then 0.04ms and 0.05ms</rdfs:comment>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;gbellmf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.0125&lt;/parameter&gt;
+      &lt;parameter&gt;2.0&lt;/parameter&gt;
+      &lt;parameter&gt;0.0455&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
     </owl:Class>
     
 
@@ -479,7 +525,6 @@
 
     <owl:Class rdf:about="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDurationMedium">
         <rdfs:subClassOf rdf:resource="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDuration"/>
-        <rdfs:comment>Duration of the Q waveform is greater then 0.04ms</rdfs:comment>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
      &lt;membershipFunction name=&quot;smf&quot;&gt;
@@ -496,6 +541,13 @@
     &lt;/membershipFunction&gt;   
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
+        <rdfs:comment>Duration of the Q waveform is greater then 0.04ms</rdfs:comment>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;smf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.025&lt;/parameter&gt;
+      &lt;parameter&gt;0.040&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
     </owl:Class>
     
 
@@ -504,7 +556,13 @@
 
     <owl:Class rdf:about="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDurationMediumRange">
         <rdfs:subClassOf rdf:resource="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDuration"/>
-        <rdfs:comment>Duration of the Q waveform is between then 0.03ms and 0.04ms</rdfs:comment>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;gbellmf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.0125&lt;/parameter&gt;
+      &lt;parameter&gt;2.0&lt;/parameter&gt;
+      &lt;parameter&gt;0.0340&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
     &lt;membershipFunction name=&quot;trapmf&quot;&gt;
@@ -525,6 +583,7 @@
     &lt;/membershipFunction&gt;
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
+        <rdfs:comment>Duration of the Q waveform is between then 0.03ms and 0.04ms</rdfs:comment>
     </owl:Class>
     
 
@@ -533,7 +592,6 @@
 
     <owl:Class rdf:about="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDurationShort">
         <rdfs:subClassOf rdf:resource="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDuration"/>
-        <rdfs:comment>Duration of the Q waveform is greater then 0.03ms</rdfs:comment>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
      &lt;membershipFunction name=&quot;smf&quot;&gt;
@@ -550,6 +608,13 @@
     &lt;/membershipFunction&gt;   
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
+        <rdfs:comment>Duration of the Q waveform is greater then 0.03ms</rdfs:comment>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;smf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.0175&lt;/parameter&gt;
+      &lt;parameter&gt;0.030&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
     </owl:Class>
     
 
@@ -558,6 +623,14 @@
 
     <owl:Class rdf:about="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDurationShortRange">
         <rdfs:subClassOf rdf:resource="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#QDuration"/>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;gbellmf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.0125&lt;/parameter&gt;
+      &lt;parameter&gt;2.0&lt;/parameter&gt;
+      &lt;parameter&gt;0.024&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
+        <rdfs:comment>Duration of the Q waveform is between then 0.02ms and 0.03ms</rdfs:comment>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
     &lt;membershipFunction name=&quot;trapmf&quot;&gt;
@@ -578,7 +651,6 @@
     &lt;/membershipFunction&gt;
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
-        <rdfs:comment>Duration of the Q waveform is between then 0.02ms and 0.03ms</rdfs:comment>
     </owl:Class>
     
 
@@ -763,7 +835,12 @@
 
     <owl:Class rdf:about="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#RAmplitudeLow">
         <rdfs:subClassOf rdf:resource="http://www.norbertsram.com/ontologies/MinnesotaCode.owl#RAmplitude"/>
-        <rdfs:comment>Amplitude of R waveform is greater than or equal to 3mm</rdfs:comment>
+        <type1FuzzyValue>&lt;membershipFunction name=&quot;smf&quot;&gt;
+   &lt;parameters&gt;
+      &lt;parameter&gt;0.175&lt;/parameter&gt;
+      &lt;parameter&gt;0.3&lt;/parameter&gt;
+   &lt;/parameters&gt;
+&lt;/membershipFunction&gt;</type1FuzzyValue>
         <fuzzyValue>&lt;type2FuzzySet name=&quot;intervalType2&quot;&gt;
   &lt;membershipFunctions&gt;
      &lt;membershipFunction name=&quot;smf&quot;&gt;
@@ -780,6 +857,7 @@
     &lt;/membershipFunction&gt;   
   &lt;/membershipFunctions&gt;
 &lt;/type2FuzzySet&gt;</fuzzyValue>
+        <rdfs:comment>Amplitude of R waveform is greater than or equal to 3mm</rdfs:comment>
     </owl:Class>
     
 
